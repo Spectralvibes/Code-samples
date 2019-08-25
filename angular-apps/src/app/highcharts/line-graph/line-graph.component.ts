@@ -11,6 +11,7 @@ export class LineGraphComponent implements OnInit {
    private chartOptions;
    private myData;
    private chartsData = [];
+   private yearPositions = [];
 
    constructor() { }
 
@@ -54,18 +55,19 @@ export class LineGraphComponent implements OnInit {
             },
             lineWidth: 0,
             tickLength: 20,
-            tickPositioner: function () {
-               let  positions = [];
-               
-               positions.push(Date.UTC(2018, 5, 10));
+            tickPositions: this.yearPositions,
+            // function (this) {
+            //    let  positions = [];
 
-               const epochDate =  new Date(Date.UTC(2019, 1, 10));
-               const yearEpoch = Date.UTC(epochDate.getFullYear(), 0);
+            //    console.log(this);
+            //    positions.push(Date.UTC(2018, 5, 10));
 
-               positions.push(yearEpoch);
+            //    const epochDate =  new Date(Date.UTC(2019, 1, 10));
+            //    const yearEpoch = Date.UTC(epochDate.getFullYear(), 0);
 
-               return positions;
-            },
+            //    positions.push(yearEpoch);
+            //    return positions;
+            // },
             dateTimeLabelFormats: {
                year: '%Y',
             }
@@ -86,7 +88,11 @@ export class LineGraphComponent implements OnInit {
          },
          series: [
             {
-               name: 'Tokyo',
+               type:'line',
+               data: this.chartsData,
+               showInLegend: false
+            },{
+               type:'column',
                data: this.chartsData,
                showInLegend: false
             }
@@ -97,11 +103,11 @@ export class LineGraphComponent implements OnInit {
    getData() {
       this.myData = [
          {
-            amount: 1300,
+            amount: 3300,
             fromDate: Date.UTC(2018, 5, 10),
             toDate: Date.UTC(2018, 5, 11)
          }, {
-            amount: 1300,
+            amount: 2300,
             fromDate: Date.UTC(2018, 6, 10),
             toDate: Date.UTC(2018, 6, 11)
          }, {
@@ -109,27 +115,27 @@ export class LineGraphComponent implements OnInit {
             fromDate: Date.UTC(2018, 7, 10),
             toDate: Date.UTC(2018, 7, 11)
          }, {
-            amount: 1300,
+            amount: 9300,
             fromDate: Date.UTC(2018, 8, 10),
             toDate: Date.UTC(2018, 8, 11)
          }, {
-            amount: 1300,
+            amount: 5300,
             fromDate: Date.UTC(2018, 9, 10),
             toDate: Date.UTC(2018, 9, 11)
          }, {
-            amount: 1300,
+            amount: 4300,
             fromDate: Date.UTC(2018, 10, 10),
             toDate: Date.UTC(2018, 10, 11)
          }, {
-            amount: 1300,
+            amount: 2300,
             fromDate: Date.UTC(2018, 11, 10),
             toDate: Date.UTC(2018, 11, 11)
          }, {
-            amount: 1300,
+            amount: 6300,
             fromDate: Date.UTC(2018, 12, 10),
             toDate: Date.UTC(2018, 12, 11)
          }, {
-            amount: 1300,
+            amount: 300,
             fromDate: Date.UTC(2019, 1, 10),
             toDate: Date.UTC(2019, 1, 11)
          }, {
@@ -151,7 +157,17 @@ export class LineGraphComponent implements OnInit {
          },
       ];
 
+      this.yearPositions.push(this.myData[0].fromDate);
+      let firstYear = (new Date(this.myData[0].fromDate).getFullYear());
       this.myData.forEach(element => {
+         if (firstYear) {
+            let year = new Date(element.fromDate).getFullYear();
+            if (firstYear !== year) {
+               this.yearPositions.push(Date.UTC(year, 0));
+            }
+            firstYear = year;
+         }
+
          this.chartsData.push({
             x: element.fromDate,
             y: element.amount,
@@ -159,6 +175,7 @@ export class LineGraphComponent implements OnInit {
             fromDate: (new Date(element.fromDate)).toISOString().split('T')[0]
          });
       });
+      console.log(this.yearPositions);
 
    }
 }
